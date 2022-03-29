@@ -1,0 +1,8 @@
+.container {
+  padding: 25px 38px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  height: 100%;
+  overflow-x: hidden;
+}

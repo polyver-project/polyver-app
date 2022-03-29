@@ -1,0 +1,33 @@
+@import "../styles/colors.module.scss";
+
+.container {
+  width: 500px;
+  height: 250px;
+  margin-bottom: 30px;
+  position: relative;
+  transition: 0.25s;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  .Gpscard {
+    width: 250px;
+    height: 185px;
+  }
+
+  .statusbar {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+  }
+
+  .title {
+    color: $textColor;
+    font-weight: bold;
+    font-size: 36px;
+    position: absolute;
+    right: 0;
+    bottom: 110px;
+  }
+}

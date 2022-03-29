@@ -1,0 +1,50 @@
+@import "../styles/colors.module.scss";
+
+.container {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  color: $textColor;
+}
+
+.titleblock {
+  flex: 7;
+  align-items: center;
+  display: flex;
+}
+
+.name {
+  margin-left: 40px;
+}
+
+.navbuttons {
+  margin-left: auto;
+  margin-left: auto;
+  display: flex;
+  flex: 2;
+  justify-content: space-between;
+
+  a {
+    color: $textColor;
+  }
+
+  :nth-child(2) {
+    margin-left: auto;
+  }
+}
+
+@media only screen and (max-width: 775px) {
+  .name {
+    display: none;
+  }
+
+  .titleblock {
+    flex: 1;
+  }
+
+  .navbuttons {
+    :first-child {
+      display: none;
+    }
+  }
+}

@@ -1,0 +1,57 @@
+@import "../../styles/colors.module.scss";
+
+.container {
+  display: flex;
+  height: 100%;
+
+  iframe {
+    border: 0px;
+    border-radius: 17px;
+  }
+
+  .left {
+    display: flex;
+    flex-direction: column;
+    flex: 3;
+    margin-right: 10px;
+
+    .viewcount {
+      color: $textColor;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      i {
+        margin-right: 5px;
+      }
+    }
+
+    .dashboard {
+      display: flex;
+      flex-direction: row;
+
+      .statusbar {
+        margin-right: 20px;
+      }
+    }
+  }
+
+  .right {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1;
+    align-items: flex-end;
+
+    iframe {
+      margin-top: 10px;
+    }
+  }
+}
+
+@media only screen and (max-width: 775px) {
+  .container {
+    .right {
+      display: none;
+    }
+  }
+}

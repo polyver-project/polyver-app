@@ -1,0 +1,19 @@
+@import "../styles/colors.module.scss";
+
+.container {
+  width: 80%;
+  margin-left: 50px;
+  h1 {
+    color: $textColor;
+  }
+
+  p {
+    color: $textColor;
+  }
+}
+
+@media only screen and (max-width: 775px) {
+  .container {
+    margin-left: 0px;
+  }
+}
