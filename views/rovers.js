@@ -1,31 +1,36 @@
 import Rovercard from "../components/rovercard";
-import Link from "next/link";
+import useSWR from "swr";
+import Loading from "../components/loading";
 import styles from "./rovers.module.scss";
 
+const fetcher = async (...args) => {
+  const res = await fetch(...args);
+  return res.json();
+};
+
 export default function Rovers() {
+  const { data, error } = useSWR(`/api/rovers`, fetcher);
+
+  if (error) return <div className={styles.container}>Failed to load DB</div>;
+
+  if (!data) {
+    return <Loading />;
+  }
+
+  data.Items.sort((a, b) => {
+    return b.queuesize - a.queuesize;
+  });
+
   return (
     <div className={styles.container}>
-      <Link href="/rover/1">
-        <a>
-          <Rovercard name="THIS ROVER NAME" timer={300} queuesize={12} />
-        </a>
-      </Link>
-
-      <Link href="/rover/2">
-        <a>
-          <Rovercard name="THIS ROVER NAME2" timer={60} queuesize={50} />
-        </a>
-      </Link>
-
-      <Link href="/rover/3">
-        <a>
-          <Rovercard name="THIS ROVER NAME3" timer={30} queuesize={999} />
-        </a>
-      </Link>
-
-      <a>
-        <Rovercard name="THIS ROVER NAME4" unavailable={true} />
-      </a>
+      {data.Items.map((item) => (
+        <Rovercard
+          name={item.pk}
+          timer={item.timeslot}
+          queuesize={item.queuesize}
+          unavailable={!item.isactive}
+        />
+      ))}
     </div>
   );
 }
