@@ -35,10 +35,12 @@ export default function Statusbar(props) {
   }
 
   return (
-    <div className={styles.container}>
+    <div
+      className={styles.container}
+      style={props.position > 0 ? { width: 525 } : {}}
+    >
       <div className={styles.item}>
         <Image src="/icons/clock.svg" height={55} width={55} />
-
         <div>
           <span>TIME SLOT</span>
           <Countdown
@@ -58,6 +60,16 @@ export default function Statusbar(props) {
           <b>{props.queuesize}</b>
         </div>
       </div>
+
+      {props.position > 0 && (
+        <div className={styles.item}>
+          <Image src="/icons/position.svg" height={55} width={55} />
+          <div>
+            <span>POSITION</span>
+            <b>{props.position}</b>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

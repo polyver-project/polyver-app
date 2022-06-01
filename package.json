@@ -6,12 +6,20 @@
     "start": "next start"
   },
   "dependencies": {
-    "aws-sdk": "^2.1108.0",
+    "@aws-amplify/api": "^4.0.40",
+    "@aws-amplify/pubsub": "^4.4.1",
+    "aws-amplify": "^4.3.22",
+    "aws-iot-device-sdk": "^2.2.12",
+    "aws-sdk": "^2.1134.0",
+    "crypto-js": "^4.1.1",
+    "fs": "^0.0.1-security",
     "gray-matter": "^4.0.3",
-    "next": "latest",
-    "react": "17.0.2",
+    "next": "^12.1.6",
+    "next-auth": "^4.3.1",
+    "paho-mqtt": "^1.1.0",
+    "react": "^17.0.2",
     "react-countdown": "^2.3.2",
-    "react-dom": "17.0.2",
+    "react-dom": "^17.0.2",
     "react-loader-spinner": "^6.0.0-0",
     "remark": "^14.0.2",
     "remark-html": "^15.0.1",
@@ -20,5 +28,9 @@
   "devDependencies": {
     "prettier": "2.6.0",
     "sass": "^1.49.9"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.6",
+    "utf-8-validate": "^5.0.9"
   }
 }

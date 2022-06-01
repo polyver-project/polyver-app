@@ -18,6 +18,8 @@ export default function Rovers() {
   }
 
   data.Items.sort((a, b) => {
+    if (!a.isactive) return 1;
+    if (!b.isactive) return -1;
     return b.queuesize - a.queuesize;
   });
 

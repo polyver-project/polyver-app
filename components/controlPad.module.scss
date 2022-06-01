@@ -1,0 +1,63 @@
+@import "../styles/colors.module.scss";
+
+.container {
+  display: flex;
+
+  .wsdPad {
+    display: flex;
+    margin-right: 20px;
+    & button {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      margin: 2px;
+      background-color: $light2;
+      color: $primary;
+      border: 0;
+      cursor: pointer;
+      transition: 0.1s;
+
+      &:active {
+        transform: scale(0.97);
+      }
+
+      &.clicked {
+        transform: scale(0.97);
+      }
+    }
+
+    .title {
+      position: absolute;
+      top: 18px;
+      font-family: "Source Sans Pro", sans-serif;
+      font-size: 16px;
+    }
+
+    .left {
+      border-radius: 50px 0 0 50px;
+    }
+
+    .right {
+      border-radius: 0 50px 50px 0;
+    }
+
+    .up {
+      & .title {
+        top: 0px;
+      }
+    }
+
+    .down {
+      & .title {
+        top: 0px;
+      }
+    }
+
+    .centerButtons {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}

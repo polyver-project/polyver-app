@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-polyverapp-dev-112353-authRole",
+      "UnauthRoleArn": "arn:aws:iam::288319164468:role/amplify-polyverapp-dev-112353-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::288319164468:role/amplify-polyverapp-dev-112353-authRole",
+      "Region": "us-west-1",
+      "DeploymentBucketName": "amplify-polyverapp-dev-112353-deployment",
+      "UnauthRoleName": "amplify-polyverapp-dev-112353-unauthRole",
+      "StackName": "amplify-polyverapp-dev-112353",
+      "StackId": "arn:aws:cloudformation:us-west-1:288319164468:stack/amplify-polyverapp-dev-112353/d7980580-d2e9-11ec-8bf0-0290e7ef4c8f",
+      "AmplifyAppId": "d25wjd6a6bwy9w"
+    },
+    "categories": {
+      "auth": {
+        "polyverapp69662eda": {}
+      }
+    }
+  }
+}

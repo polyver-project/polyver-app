@@ -1,7 +1,9 @@
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Image from "next/image";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
+import { useSession } from "next-auth/react";
 
 import Layout from "../../components/layout";
 import Nav from "../../components/nav";
@@ -9,8 +11,10 @@ import ArticleSection from "../../components/articleSection";
 import Gpscard from "../../components/gpscard";
 import Statusbar from "../../components/statusbar";
 import Roundbutton from "../../components/roundbutton";
+import ControlPad from "../../components/controlPad";
 import { getAllRoverIds, getRoverData } from "../../lib/rover";
 import Loading from "../../components/loading";
+import Authwindow from "../../views/authwindow";
 import styles from "./rover.module.scss";
 
 const fetcher = async (...args) => {
@@ -19,6 +23,30 @@ const fetcher = async (...args) => {
 };
 
 export default function Rover({ postData }) {
+  const [authVisible, setAuthVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [userstate, setUserstate] = useState("join");
+  const [userpos, setUserpos] = useState(-1);
+  const [timestamp, setTimestamp] = useState(-1);
+
+  const onStorageUpdate = (e) => {
+    const { key, newValue } = e;
+
+    switch (key) {
+      case "userstate":
+        setUserstate(newValue);
+        break;
+      case "userpos":
+        setUserpos(newValue);
+        break;
+      case "timestamp":
+        setTimestamp(newValue);
+        break;
+      default:
+        break;
+    }
+  };
+
   const router = useRouter();
   if (router.isFallback) {
     return (
@@ -59,12 +87,125 @@ export default function Rover({ postData }) {
     );
   }
 
+  const { mutate } = useSWRConfig();
   const { data, error } = useSWR(
     `/api/rovers/${encodeURIComponent(postData.title)}`,
     fetcher
   );
+  const { data: session, status } = useSession({ required: true });
 
   if (error) return <div className={styles.container}>Failed to load DB</div>;
+
+  const onQueueComplete = (data) => {
+    setUserstate("inqueue");
+    setTimestamp(data.timestamp);
+    localStorage.setItem("userstate", "inqueue");
+    localStorage.setItem("timestamp", data.timestamp);
+  };
+
+  const onDequeueComplete = () => {
+    data.Item.queuesize -= 1;
+    setUserstate("join");
+    setUserpos(-1);
+    setTimestamp(-1);
+    localStorage.setItem("userstate", "join");
+    localStorage.setItem("userpos", -1);
+    localStorage.setItem("timestamp", -1);
+
+    //request update to data populating the page
+    mutate(`/api/rovers/${encodeURIComponent(postData.title)}`);
+  };
+
+  useEffect(() => {
+    //check to see if state can be retrieved from local storage
+    const currUserState = localStorage.getItem("userstate") || "join";
+    setUserstate(currUserState);
+    setUserpos(localStorage.getItem("userpos") || -1);
+    setTimestamp(localStorage.getItem("timestamp") || -1);
+    window.addEventListener("storage", onStorageUpdate);
+
+    console.log("---------");
+    console.log(currUserState);
+    console.log(status);
+    if (status === "loading")
+      return () => {
+        window.removeEventListener("storage", onStorageUpdate);
+      };
+
+    if (!session) {
+      console.log("no session");
+      console.log(session.user.email);
+      onDequeueComplete();
+    } else if (currUserState == "inqueue") {
+      fetch(
+        `/api/rovers/${encodeURIComponent(postData.title)}/${encodeURIComponent(
+          session.user.email
+        )}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          if (data.Count > 0) {
+            console.log("updating...");
+            setUserpos(data.Items[0].qpos);
+            localStorage.setItem("userpos", data.Items[0].qpos);
+          } else {
+            onDequeueComplete();
+          }
+        });
+    }
+
+    return () => {
+      window.removeEventListener("storage", onStorageUpdate);
+    };
+  }, [status]);
+
+  useEffect(() => {
+    //Interval timer to update data on the page
+    const interval = setInterval(() => {
+      console.log("updating page data");
+      mutate(`/api/rovers/${encodeURIComponent(postData.title)}`);
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (status === "authenticated" && userstate === "inqueue") {
+      mutate(`/api/rovers/${encodeURIComponent(postData.title)}`);
+      data.Item.queuesize += 1;
+      setUserpos(data.Item.queuesize);
+      localStorage.setItem("userpos", data.Item.queuesize);
+
+      const interval = setInterval(() => {
+        console.log("updating queue data");
+        fetch(
+          `/api/rovers/${encodeURIComponent(
+            postData.title
+          )}/${encodeURIComponent(session.user.email)}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            setUserpos(data.Items[0].qpos);
+            localStorage.setItem("userpos", data.Items[0].qpos);
+          });
+      }, 2000);
+
+      return () => clearInterval(interval);
+    }
+  }, [status, userstate]);
 
   return (
     <Layout>
@@ -77,28 +218,72 @@ export default function Rover({ postData }) {
             height="100%"
             width="100%"
           />
-          <span className={styles.viewcount}>
+          {/* <span className={styles.viewcount}>
             <i>
               <Image src="/icons/viewcount.svg" height={13} width={13} />
             </i>
             300
-          </span>
+          </span> */}
           <div className={styles.dashboard}>
             <span className={styles.statusbar}>
               {data ? (
                 <Statusbar
                   timer={data.Item.timeslot * 1000}
                   queuesize={data.Item.queuesize}
+                  position={userpos}
                 />
               ) : (
                 <Statusbar timer={0} queuesize={0} />
               )}
             </span>
-            <Roundbutton
-              title="JOIN"
-              icon="plus"
-              onClick={() => alert("join button")}
-            />
+            {data && userstate == "join" && (
+              <Roundbutton
+                title="JOIN"
+                icon="plus"
+                onClick={() => {
+                  if (session) {
+                    setLoading(true);
+                    fetch(`/api/rovers/${encodeURIComponent(postData.title)}`, {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                    })
+                      .then((response) => response.json())
+                      .then((data) => {
+                        setLoading(false);
+                        onQueueComplete(data);
+                      });
+                  } else {
+                    setAuthVisible(true);
+                  }
+                }}
+              />
+            )}
+
+            {userpos > 0 && (
+              <Roundbutton
+                title="CANCEL"
+                icon="cancel"
+                onClick={() => {
+                  setLoading(true);
+                  fetch(`/api/rovers/${encodeURIComponent(postData.title)}`, {
+                    method: "DELETE",
+                    body: JSON.stringify({ timestamp }),
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                  })
+                    .then((response) => response.json())
+                    .then(() => {
+                      setLoading(false);
+                      onDequeueComplete();
+                    });
+                }}
+              />
+            )}
+
+            {userstate === "controller" && <ControlPad />}
           </div>
         </div>
 
@@ -113,7 +298,10 @@ export default function Rover({ postData }) {
         </div>
       </div>
 
-      {!data && <Loading />}
+      {(!data || loading) && <Loading />}
+      {authVisible && !session && (
+        <Authwindow setAuthVisible={setAuthVisible} />
+      )}
       <div dangerouslySetInnerHTML={{ __html: postData.contentHtml }} />
     </Layout>
   );

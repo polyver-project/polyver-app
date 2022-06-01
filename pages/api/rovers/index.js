@@ -5,7 +5,7 @@ export default async function (req, res) {
   if (req.method === "GET") {
     // Allow a blog post to get its number of likes and views
     const params = {
-      TableName: "polyver_database",
+      TableName: process.env.DB_TABLENAME,
       IndexName: "isinfo-index",
     };
 
