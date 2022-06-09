@@ -27,10 +27,14 @@ export default function Rovers() {
     <div className={styles.container}>
       {data.Items.map((item) => (
         <Rovercard
+          key={item.pk}
           name={item.pk}
           timer={item.timeslot}
           queuesize={item.queuesize}
           unavailable={!item.isactive}
+          fence={item.fence}
+          fencePicture={item.fencePicture}
+          pos={item.pos}
         />
       ))}
     </div>

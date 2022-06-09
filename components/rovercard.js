@@ -9,7 +9,17 @@ export default function Rovercard(props) {
       <a style={{ pointerEvents: props.unavailable ? "none" : "auto" }}>
         <div className={styles.container}>
           <div className={styles.Gpscard}>
-            <Gpscard />
+            {props.fencePicture ? (
+              <Gpscard
+                rovername={props.name}
+                fence={props.fence}
+                fencePicture={props.fencePicture}
+                pos={props.pos}
+                loading={false}
+              />
+            ) : (
+              <Gpscard rovername={props.name} loading={true} />
+            )}
           </div>
           <span className={styles.title}>{props.name}</span>
           <div className={styles.statusbar}>

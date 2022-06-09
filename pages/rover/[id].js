@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import Image from "next/image";
 import useSWR, { useSWRConfig } from "swr";
 import { useSession } from "next-auth/react";
 
@@ -288,7 +287,17 @@ export default function Rover({ postData }) {
         </div>
 
         <div className={styles.right}>
-          <Gpscard />
+          {data ? (
+            <Gpscard
+              rovername={data.Item.pk}
+              fence={data.Item.fence}
+              fencePicture={data.Item.fencePicture}
+              pos={data.Item.pos}
+              loading={false}
+            />
+          ) : (
+            <Gpscard rovername={postData.title} loading={true} />
+          )}
           <iframe
             id="twitch-chat-embed"
             src={`https://www.twitch.tv/embed/${postData.streamurl}/chat?darkpopout&parent=localhost`}

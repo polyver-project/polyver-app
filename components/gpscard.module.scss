@@ -6,4 +6,12 @@
   border-radius: 17px;
   width: 100%;
   aspect-ratio: 4 / 3;
+  overflow: hidden;
+
+  svg {
+    position: relative;
+    stroke-width: 3px;
+    stroke: $primary;
+    fill: white;
+  }
 }
