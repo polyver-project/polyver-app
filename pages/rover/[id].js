@@ -269,7 +269,7 @@ export default function Rover({ postData }) {
             console.log("in interval timer for inqueue");
             console.log(data);
             console.log(userstate);
-            if (userstate != "inqueue") {
+            if (!data) {
               return () => clearInterval(interval);
             }
             setUserpos(data.Items[0].qpos);
