@@ -226,8 +226,6 @@ export default function Rover({ postData }) {
       })
         .then((response) => response.json())
         .then(() => {
-          // onDequeueComplete();
-
           //dequeue complete, now join again
           fetch(`/api/rovers/${encodeURIComponent(postData.title)}`, {
             method: "POST",
@@ -268,7 +266,10 @@ export default function Rover({ postData }) {
         )
           .then((response) => response.json())
           .then((data) => {
-            if (!data) {
+            console.log("in interval timer for inqueue");
+            console.log(data);
+            console.log(userstate);
+            if (userstate != "inqueue") {
               return () => clearInterval(interval);
             }
             setUserpos(data.Items[0].qpos);
