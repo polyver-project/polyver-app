@@ -47,7 +47,7 @@ export default async function (req, res) {
         if (err) {
           res.status(err).json({});
         } else {
-          if (data.Item.controlled && data.Item.queuesize == 0) {
+          if (data.Item.controlled || data.Item.queuesize != 0) {
             //add user to queue
             db.put(newQueue_params, function (err, data) {
               if (err) {
