@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import useSWR, { useSWRConfig } from "swr";
@@ -27,6 +27,7 @@ export default function Rover({ postData }) {
   const [userstate, setUserstate] = useState("join");
   const [userpos, setUserpos] = useState(-1);
   const [timestamp, setTimestamp] = useState(-1);
+  const [refreshCounter, setrefreshCounter] = useState(0);
 
   const onStorageUpdate = (e) => {
     const { key, newValue } = e;
@@ -127,7 +128,7 @@ export default function Rover({ postData }) {
     mutate(`/api/rovers/${encodeURIComponent(postData.title)}`);
   };
 
-  const onTimerComplete = () => {
+  const onTimerComplete = useCallback(() => {
     console.log("timer finished");
     fetch(`/api/rovers/${encodeURIComponent(postData.title)}`, {
       method: "PUT",
@@ -145,7 +146,7 @@ export default function Rover({ postData }) {
         localStorage.setItem("userpos", -1);
         localStorage.setItem("timestamp", -1);
       });
-  };
+  }, []);
 
   useEffect(() => {
     //check to see if state can be retrieved from local storage
@@ -201,6 +202,7 @@ export default function Rover({ postData }) {
     //Interval timer to update data on the page
     const interval = setInterval(() => {
       mutate(`/api/rovers/${encodeURIComponent(postData.title)}`);
+      setrefreshCounter(Math.random() * 100);
     }, 10000);
 
     return () => clearInterval(interval);
@@ -242,7 +244,7 @@ export default function Rover({ postData }) {
             });
         });
     }
-  }, [data]);
+  }, [refreshCounter]);
 
   useEffect(() => {
     if (data && status === "authenticated" && userstate === "inqueue") {

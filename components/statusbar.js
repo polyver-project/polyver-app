@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, memo } from "react";
 import styles from "./statusbar.module.scss";
 import Countdown from "react-countdown";
 import Image from "next/image";
@@ -23,7 +23,7 @@ const renderer = ({ minutes, seconds, completed }) => {
   }
 };
 
-export default (props) => {
+export default memo((props) => {
   const countdownRef = useRef();
 
   const startCountdown = () => countdownRef.current.start();
@@ -80,4 +80,4 @@ export default (props) => {
       )}
     </div>
   );
-};
+});
