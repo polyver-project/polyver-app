@@ -268,6 +268,9 @@ export default function Rover({ postData }) {
         )
           .then((response) => response.json())
           .then((data) => {
+            if (!data) {
+              return () => clearInterval(interval);
+            }
             setUserpos(data.Items[0].qpos);
             localStorage.setItem("userpos", data.Items[0].qpos);
           });
@@ -298,7 +301,7 @@ export default function Rover({ postData }) {
             <span className={styles.statusbar}>
               {data ? (
                 <Statusbar
-                  timer={data.Item.timeslot * 20}
+                  timer={data.Item.timeslot * 30}
                   queuesize={data.Item.queuesize}
                   position={userpos}
                   onComplete={onTimerComplete}
