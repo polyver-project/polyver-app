@@ -236,7 +236,7 @@ export default function Rover({ postData }) {
             .then((response) => response.json())
             .then((data) => {
               setLoading(false);
-              if (data.controller) {
+              if (data.controlled) {
                 onSetController(data);
               }
             });
