@@ -14,7 +14,11 @@ export default function Rovers() {
   if (error) return <div className={styles.container}>Failed to load DB</div>;
 
   if (!data) {
-    return <Loading />;
+    return (
+      <>
+        <Loading />
+      </>
+    );
   }
 
   data.Items.sort((a, b) => {

@@ -95,6 +95,18 @@ export default function Rover({ postData }) {
 
   if (error) return <div className={styles.container}>Failed to load DB</div>;
 
+  const onSetController = (data) => {
+    console.log(data);
+    setUserstate("controller");
+
+    window.onbeforeunload = function (e) {
+      const dialogText =
+        "You will lose your controller position. Are you sure you want to leave?";
+      e.returnValue = dialogText;
+      return dialogText;
+    };
+  };
+
   const onQueueComplete = (data) => {
     setUserstate("inqueue");
     setTimestamp(data.timestamp);
@@ -113,6 +125,26 @@ export default function Rover({ postData }) {
 
     //request update to data populating the page
     mutate(`/api/rovers/${encodeURIComponent(postData.title)}`);
+  };
+
+  const onTimerComplete = () => {
+    console.log("timer finished");
+    fetch(`/api/rovers/${encodeURIComponent(postData.title)}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then(() => {
+        setLoading(false);
+        setUserstate("join");
+        setUserpos(-1);
+        setTimestamp(-1);
+        localStorage.setItem("userstate", "join");
+        localStorage.setItem("userpos", -1);
+        localStorage.setItem("timestamp", -1);
+      });
   };
 
   useEffect(() => {
@@ -168,7 +200,6 @@ export default function Rover({ postData }) {
   useEffect(() => {
     //Interval timer to update data on the page
     const interval = setInterval(() => {
-      console.log("updating page data");
       mutate(`/api/rovers/${encodeURIComponent(postData.title)}`);
     }, 10000);
 
@@ -176,7 +207,45 @@ export default function Rover({ postData }) {
   }, []);
 
   useEffect(() => {
-    if (status === "authenticated" && userstate === "inqueue") {
+    console.log("updating page data");
+    console.log(data);
+
+    if (data && data.controlled && userpos == 1) {
+      //dequeing switching to controller state
+      console.log("dequeing switching to controller state");
+
+      setLoading(true);
+      fetch(`/api/rovers/${encodeURIComponent(postData.title)}`, {
+        method: "DELETE",
+        body: JSON.stringify({ timestamp }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then(() => {
+          onDequeueComplete();
+
+          //dequeue complete, now join again
+          fetch(`/api/rovers/${encodeURIComponent(postData.title)}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              setLoading(false);
+              if (data.controller) {
+                onSetController(data);
+              }
+            });
+        });
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (data && status === "authenticated" && userstate === "inqueue") {
       mutate(`/api/rovers/${encodeURIComponent(postData.title)}`);
       data.Item.queuesize += 1;
       setUserpos(data.Item.queuesize);
@@ -227,9 +296,11 @@ export default function Rover({ postData }) {
             <span className={styles.statusbar}>
               {data ? (
                 <Statusbar
-                  timer={data.Item.timeslot * 1000}
+                  timer={data.Item.timeslot * 100}
                   queuesize={data.Item.queuesize}
                   position={userpos}
+                  onComplete={onTimerComplete}
+                  userstate={userstate}
                 />
               ) : (
                 <Statusbar timer={0} queuesize={0} />
@@ -251,7 +322,11 @@ export default function Rover({ postData }) {
                       .then((response) => response.json())
                       .then((data) => {
                         setLoading(false);
-                        onQueueComplete(data);
+                        if (data.controller) {
+                          onSetController(data);
+                        } else {
+                          onQueueComplete(data);
+                        }
                       });
                   } else {
                     setAuthVisible(true);

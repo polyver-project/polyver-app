@@ -39,7 +39,7 @@ export default function Gpscard(props) {
 
   useEffect(() => {
     if (props.loading) return;
-    console.log("width: ", width, "\theihgt: ", height);
+    // console.log("width: ", width, "\theihgt: ", height);
     // console.log(props.pos);
     // console.log(props.fencePicture);
 
@@ -54,7 +54,7 @@ export default function Gpscard(props) {
     const rover_cx = width * (rover_relativePosX / picWidth);
     const rover_cy = height - height * (rover_relativePosY / picHeight);
 
-    console.log("picWidth: ", picWidth, "picHeight: ", picHeight);
+    // console.log("picWidth: ", picWidth, "picHeight: ", picHeight);
     // console.log(
     //   "rover_PosX: ",
     //   rover_relativePosX,

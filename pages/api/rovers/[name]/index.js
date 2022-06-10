@@ -24,7 +24,7 @@ export default async function (req, res) {
   } else if (req.method === "POST") {
     const session = await getSession({ req });
     const timestamp = new Date().getTime();
-    const params = {
+    const newQueue_params = {
       TableName: process.env.DB_TABLENAME,
       Item: {
         pk: name,
@@ -34,13 +34,55 @@ export default async function (req, res) {
     };
 
     if (session) {
-      db.put(params, function (err, data) {
+      const params = {
+        TableName: process.env.DB_TABLENAME,
+        Key: {
+          pk: name,
+          sk: "info",
+        },
+      };
+
+      //get current rover data
+      db.get(params, function (err, data) {
         if (err) {
           res.status(err).json({});
         } else {
-          // send the json response from the callback
-          data["timestamp"] = timestamp;
-          res.send(JSON.stringify(data, null, 2));
+          if (data.Item.controlled) {
+            //add user to queue
+            db.put(newQueue_params, function (err, data) {
+              if (err) {
+                res.status(err).json({});
+              } else {
+                // send the json response from the callback
+                data["timestamp"] = timestamp;
+                data["controller"] = false;
+                res.send(JSON.stringify(data, null, 2));
+              }
+            });
+          } else {
+            //set user as the controller
+            const update_controllerParam = {
+              TableName: process.env.DB_TABLENAME,
+              Key: {
+                pk: name,
+                sk: "info",
+              },
+              UpdateExpression: "set controlled=:x",
+              ExpressionAttributeValues: {
+                ":x": true,
+              },
+            };
+
+            db.update(update_controllerParam, function (err, data) {
+              if (err) {
+                res.status(err).json({});
+              } else {
+                // send the json response from the callback
+                data["controller"] = true;
+                res.send(JSON.stringify(data, null, 2));
+              }
+            });
+          }
         }
       });
     } else {
@@ -49,6 +91,28 @@ export default async function (req, res) {
           "You must be sign in to view the protected content on this page.",
       });
     }
+  } else if (req.method === "PUT") {
+    //set user as the controller
+    const update_controllerParam = {
+      TableName: process.env.DB_TABLENAME,
+      Key: {
+        pk: name,
+        sk: "info",
+      },
+      UpdateExpression: "set controlled=:x",
+      ExpressionAttributeValues: {
+        ":x": false,
+      },
+    };
+
+    db.update(update_controllerParam, function (err, data) {
+      if (err) {
+        res.status(err).json({});
+      } else {
+        // send the json response from the callback
+        res.send(JSON.stringify(data, null, 2));
+      }
+    });
   } else if (req.method === "DELETE") {
     const timestamp = req.body.timestamp;
     const params = {

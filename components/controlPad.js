@@ -5,12 +5,9 @@ import Roundbutton from "./roundbutton";
 import Image from "next/image";
 
 import Amplify from "aws-amplify";
-import awsconfig from "../src/aws-exports";
 
 import { PubSub, Auth } from "aws-amplify";
 import { AWSIoTProvider } from "@aws-amplify/pubsub/lib/Providers";
-
-// Amplify.configure(awsconfig);
 
 Amplify.configure({
   Auth: {

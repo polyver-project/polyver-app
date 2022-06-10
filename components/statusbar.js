@@ -1,9 +1,7 @@
+import { useRef, useEffect } from "react";
 import styles from "./statusbar.module.scss";
 import Countdown from "react-countdown";
 import Image from "next/image";
-
-// Random component
-const Completionist = () => <span>0:00</span>;
 
 // Renderer callback with condition
 const renderer = ({ minutes, seconds, completed }) => {
@@ -14,7 +12,7 @@ const renderer = ({ minutes, seconds, completed }) => {
 
   if (completed) {
     // Render a completed state
-    return <Completionist />;
+    return <b>0:00</b>;
   } else {
     // Render a countdown
     return (
@@ -25,7 +23,15 @@ const renderer = ({ minutes, seconds, completed }) => {
   }
 };
 
-export default function Statusbar(props) {
+export default (props) => {
+  const countdownRef = useRef();
+
+  const startCountdown = () => countdownRef.current.start();
+
+  useEffect(() => {
+    if (props.userstate == "controller") startCountdown();
+  }, [props.userstate]);
+
   if (props.unavailable) {
     return (
       <div className={styles.container}>
@@ -49,6 +55,8 @@ export default function Statusbar(props) {
             intervalDelay={0}
             precision={1}
             renderer={renderer}
+            onComplete={props.onComplete}
+            ref={countdownRef}
           />
         </div>
       </div>
@@ -72,4 +80,4 @@ export default function Statusbar(props) {
       )}
     </div>
   );
-}
+};
