@@ -35,25 +35,25 @@ export default function ControlPad(props) {
 
   const left_button = () => {
     console.log("go left");
-    mqttCmd("polyver1", "left");
+    mqttCmd("Dr. Polyver", "left");
     setClickState("a");
   };
 
   const right_button = () => {
     console.log("go right");
-    mqttCmd("polyver1", "right");
+    mqttCmd("Dr. Polyver", "right");
     setClickState("d");
   };
 
   const up_button = () => {
     console.log("go up");
-    mqttCmd("polyver1", "up");
+    mqttCmd("Dr. Polyver", "up");
     setClickState("w");
   };
 
   const bottom_button = () => {
     console.log("go down");
-    mqttCmd("polyver1", "down");
+    mqttCmd("Dr. Polyver", "down");
     setClickState("s");
   };
 

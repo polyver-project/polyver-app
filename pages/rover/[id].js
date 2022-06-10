@@ -212,7 +212,7 @@ export default function Rover({ postData }) {
     console.log("updating page data");
     console.log(data);
 
-    if (data && !data.controlled && userpos == 1) {
+    if (data && !data.controlled && userstate == "inqueue" && userpos == 1) {
       //dequeing switching to controller state
       console.log("dequeing switching to controller state");
 
@@ -226,7 +226,7 @@ export default function Rover({ postData }) {
       })
         .then((response) => response.json())
         .then(() => {
-          onDequeueComplete();
+          // onDequeueComplete();
 
           //dequeue complete, now join again
           fetch(`/api/rovers/${encodeURIComponent(postData.title)}`, {
