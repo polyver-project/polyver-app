@@ -212,7 +212,7 @@ export default function Rover({ postData }) {
     console.log("updating page data");
     console.log(data);
 
-    if (data && data.controlled && userpos == 1) {
+    if (data && !data.controlled && userpos == 1) {
       //dequeing switching to controller state
       console.log("dequeing switching to controller state");
 
@@ -298,7 +298,7 @@ export default function Rover({ postData }) {
             <span className={styles.statusbar}>
               {data ? (
                 <Statusbar
-                  timer={data.Item.timeslot * 100}
+                  timer={data.Item.timeslot * 20}
                   queuesize={data.Item.queuesize}
                   position={userpos}
                   onComplete={onTimerComplete}
