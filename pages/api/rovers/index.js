@@ -3,7 +3,6 @@ import db from "../../../db";
 export default async function (req, res) {
   // filter API requests by method
   if (req.method === "GET") {
-    // Allow a blog post to get its number of likes and views
     const params = {
       TableName: process.env.DB_TABLENAME,
       IndexName: "isinfo-index",
@@ -18,7 +17,6 @@ export default async function (req, res) {
       }
     });
   } else if (req.method === "PUT") {
-    // Allow a blog post to update its likes (via a button) or views (on rendering)
   }
 }
 
