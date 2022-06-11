@@ -203,7 +203,7 @@ export default function Rover({ postData }) {
     const interval = setInterval(() => {
       mutate(`/api/rovers/${encodeURIComponent(postData.title)}`);
       setrefreshCounter(Math.random() * 100);
-    }, 10000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
@@ -302,7 +302,7 @@ export default function Rover({ postData }) {
             <span className={styles.statusbar}>
               {data ? (
                 <Statusbar
-                  timer={data.Item.timeslot * 30}
+                  timer={data.Item.timeslot * 1000}
                   queuesize={data.Item.queuesize}
                   position={userpos}
                   onComplete={onTimerComplete}
