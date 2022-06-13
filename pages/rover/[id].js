@@ -363,7 +363,9 @@ export default function Rover({ postData }) {
               />
             )}
 
-            {userstate === "controller" && <ControlPad />}
+            {userstate === "controller" && (
+              <ControlPad rovername={data.Item.pk} />
+            )}
           </div>
         </div>
 
